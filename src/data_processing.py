@@ -23,3 +23,9 @@ def clean_numeric_columns(df):
       df = df.rename(columns={"close/last": "close"})
 
    return df
+
+def moving_avg(df, windows=[20, 50]):
+   for w in windows:
+      col_name = f"ma_{w}"
+      df[col_name] = df["close"].rolling(w).mean()
+      return df
