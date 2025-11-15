@@ -2,7 +2,6 @@ import yfinance as yf
 import pandas as pd
 
 import os
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #def fetch_stock(ticker, start_date, end_date):
@@ -42,7 +41,6 @@ def moving_avg(df, windows=[20, 50]):
       df[col_name] = df["close"].rolling(window=w).mean()
    return df
 
-if __name__ == "__main__":
-    print("TEST: data_processing.py is running")
-    df = load_csv("AAPL")
-    print(df.head())
+def daily_return(df):
+   df["daily_return"] = df["close"].pct_change() * 100
+   return df
