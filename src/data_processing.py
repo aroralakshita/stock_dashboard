@@ -27,5 +27,5 @@ def clean_numeric_columns(df):
 def moving_avg(df, windows=[20, 50]):
    for w in windows:
       col_name = f"ma_{w}"
-      df[col_name] = df["close"].rolling(w).mean()
-      return df
+      df[col_name] = df["close"].rolling(window=w).mean()
+   return df
