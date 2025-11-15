@@ -18,7 +18,7 @@ def plot_closing_price(df):
     )
     return fig
 
-def plot_closing_price_with_ma(df, title="Closing proce with moving averages"):
+def plot_closing_price_with_ma(df, title="Closing price with moving averages"):
 
     fig = go.Figure()
 
@@ -51,6 +51,21 @@ def plot_closing_price_with_ma(df, title="Closing proce with moving averages"):
 
     return fig
 
+def plot_volume_vs_return(df):
+    df["daily_return"] = df["close"].pct_change()
+
+    fig = px.scatter(
+        df,
+        x="daily_return",
+        y="volume",
+        size="volume",
+        hover_data="date",
+        title="Volums vs Daily return",
+        labels={"daily_return": "Daily Return", "volume": "Volume"}
+    )
+
+    fig.update_layout(template="plotly_white")
+    return fig
 
 
 
