@@ -41,6 +41,11 @@ def moving_avg(df, windows=[20, 50]):
       df[col_name] = df["close"].rolling(window=w).mean()
    return df
 
-def daily_return(df):
-   df["daily_return"] = df["close"].pct_change() * 100
+def bollinger_bands(df, window=20, num_std=2):
+
+   df["bb_mid"] = df["close"].rolling(window).mean()
+   df["bb_std"] = df["close"].rolling(window).std()
+   df["bb_upper"] = df["bb_mid"] + num_std * df["bb_std"]
+   df["bb_lower"] = df["bb_mid"] - num_std * df["bb_std"]
+
    return df
