@@ -34,38 +34,43 @@ df = bollinger_bands(df)
 df = compute_rsi(df)
 df = compute_macd(df)
 
+tab1, tab2 = st.tabs(["Price Overwiew", "Technical Indicators"])
+
 if ma_options:
     df = moving_avg(df, windows=ma_options)
 
-if show_closing_price_line:
-    st.subheader("CLosing Price Over Time")
-    fig1 = plot_closing_price(df)
-    st.plotly_chart(fig1, use_container_width=True)
+with tab1:
+    if show_closing_price_line:
+        st.subheader("CLosing Price Over Time")
+        fig1 = plot_closing_price(df)
+        st.plotly_chart(fig1, use_container_width=True)
 
-if show_ma_line:
-    st.subheader("Closing Price with Moving Averages")
-    fig2 = plot_closing_price_with_ma(df)
-    st.plotly_chart(fig2, use_container_width=True)
+    if show_candles:
+        st.subheader("Candlestick + Bollinger Bands")
+        fig4 = plot_candlestick_with_bbands(df)
+        st.plotly_chart(fig4, use_container_width=True)
 
-if show_scatter:
-    st.subheader("Volume vs Daily Return")
-    fig3 = plot_volume_vs_return(df)
-    st.plotly_chart(fig3, use_container_width=True)
+    if show_scatter:
+        st.subheader("Volume vs Daily Return")
+        fig3 = plot_volume_vs_return(df)
+        st.plotly_chart(fig3, use_container_width=True)
 
-if show_candles:
-    st.subheader("Candlestick + Bollinger Bands")
-    fig4 = plot_candlestick_with_bbands(df)
-    st.plotly_chart(fig4, use_container_width=True)
 
-if show_rsi:
-    st.subheader("RSI indicator")
-    fig5 = plot_rsi(df)
-    st.plotly_chart(fig5, use_container_width=True)
-
-if show_macd:
-    st.subheader("MACD indicator")
-    fig6 = plot_macd(df)
-    st.plotly_chart(fig6, use_container_width=True)
+with tab2:
+    if show_ma_line:
+        st.subheader("Closing Price with Moving Averages")
+        fig2 = plot_closing_price_with_ma(df)
+        st.plotly_chart(fig2, use_container_width=True)
+    
+    if show_rsi:
+        st.subheader("RSI indicator")
+        fig5 = plot_rsi(df)
+        st.plotly_chart(fig5, use_container_width=True)
+    
+    if show_macd:
+        st.subheader("MACD indicator")
+        fig6 = plot_macd(df)
+        st.plotly_chart(fig6, use_container_width=True)
 
 print(df.head())
 print(df.info())
