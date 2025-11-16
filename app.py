@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-from src.data_processing import load_csv, clean_numeric_columns, moving_avg, bollinger_bands
-from src.viz import plot_closing_price, plot_closing_price_with_ma, plot_volume_vs_return, plot_candlestick_with_bbands
+from src.data_processing import load_csv, clean_numeric_columns, moving_avg, bollinger_bands, compute_rsi, compute_macd
+from src.viz import plot_closing_price, plot_closing_price_with_ma, plot_volume_vs_return, plot_candlestick_with_bbands, plot_rsi, plot_macd
 
 st.sidebar.title("stock dashboard")
 
@@ -21,6 +21,8 @@ show_ma_line = st.sidebar.checkbox("Show moving averages", value=True)
 show_scatter = st.sidebar.checkbox("Show volume vs daily return", value=True)
 show_gainers_losers = st.sidebar.checkbox("Show top gainers/losers", value=True)
 show_candles = st.sidebar.checkbox("Show Candlestick + Bollinger Bands", value=True)
+show_rsi = st.sidebar.checkbox("Show RSI indicator", value=True)
+show_macd = st.sidebar.checkbox("Show MACD inidcator", value=True)
 
 df = load_csv(ticker)
 df = clean_numeric_columns(df)
@@ -28,6 +30,9 @@ df = clean_numeric_columns(df)
 df = df[(df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))]
 
 df = bollinger_bands(df)
+
+df = compute_rsi(df)
+df = compute_macd(df)
 
 if ma_options:
     df = moving_avg(df, windows=ma_options)
@@ -52,6 +57,15 @@ if show_candles:
     fig4 = plot_candlestick_with_bbands(df)
     st.plotly_chart(fig4, use_container_width=True)
 
+if show_rsi:
+    st.subheader("RSI indicator")
+    fig5 = plot_rsi(df)
+    st.plotly_chart(fig5, use_container_width=True)
+
+if show_macd:
+    st.subheader("MACD indicator")
+    fig6 = plot_macd(df)
+    st.plotly_chart(fig6, use_container_width=True)
 
 print(df.head())
 print(df.info())
