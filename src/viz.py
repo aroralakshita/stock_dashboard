@@ -116,3 +116,57 @@ def plot_candlestick_with_bbands(df, title="Candlestick Chart with Bollinger Ban
     )
 
     return fig
+
+def plot_rsi(df):
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=df["date"],
+        y=df["RSI"],
+        line=dict(width=2),
+        name="RSI"
+    ))
+
+    fig.add_hline(y=70, line=dict(dash="dash", width=1))
+    fig.add_hline(y=30, line=dict(dash="dash", width=1))
+
+    fig.update_layout(
+        title="RSI",
+        xaxis_title="Date",
+        yaxis_title="RSI"
+    )
+
+    return fig
+
+def plot_macd(df):
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=df["date"],
+        y=df["MACD"],
+        line=dict(width=2),
+        name="MACD",
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=df["date"],
+        y=df["Signal"],
+        line=dict(width=2),
+        name="Signal",
+    ))
+
+    fig.add_trace(go.Bar(
+        x=df["date"],
+        y=df["MACD_hist"],
+        name="Histogram"
+    ))
+
+    fig.update_layout(
+        title="MACD",
+        xaxis_title="Date"
+    )
+
+    return fig
+
