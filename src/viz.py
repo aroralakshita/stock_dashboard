@@ -53,8 +53,7 @@ def plot_closing_price_with_ma(df, title="Closing price with moving averages"):
     return fig
 
 def plot_volume_vs_return(df):
-    df["daily_return"] = df["close"].pct_change()
-
+    
     fig = px.scatter(
         df,
         x="daily_return",
@@ -169,4 +168,3 @@ def plot_macd(df):
     )
 
     return fig
-
