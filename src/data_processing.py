@@ -1,28 +1,43 @@
 import yfinance as yf
 import pandas as pd
+import streamlit as st
 
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#import os
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#def fetch_stock(ticker, start_date, end_date):
+@st.cache_data
+def fetch_stock(ticker, start="2015-01-01", end=None):
  # ticker → stock symbol (e.g., "AAPL" for Apple)
     
    #stock = yf.Ticker(ticker)
-   #df = stock.history(start=start_date, end=end_date)
-    
+   df = yf.download(ticker, start=start, end=end)
+   df.reset_index(inplace=True)
+   
+   if isinstance(df.columns, pd.MultiIndex):
+      df.columns = [c[0].lower() for c in df.columns]
+   else:
+      df.columns = [str(c).lower().replace(" ", "_") for c in df.columns]
+   
+   expected = ["date", "open", "high", "low", "close", "volume"]
+
+   for c in expected:
+      if c not in df.columns:
+         raise KeyError(f"missing required column: {c}")
+   
+   return df[expected]
    #if df.empty:
       #raise ValueError(f"No data returned for {ticker}. Try again in 30–60 seconds.")
 
 
-def load_csv(ticker: str):
-    path = os.path.join(BASE_DIR, "data", f"{ticker}.csv")
-    print("Loading:", path)
-    df = pd.read_csv(path)
-    df = df.reset_index()
-    df.columns = [str(c).lower().replace(" ", "_") for c in df.columns]
-    df["date"] = pd.to_datetime(df["date"])
+#def load_csv(ticker: str):
+    #path = os.path.join(BASE_DIR, "data", f"{ticker}.csv")
+    #print("Loading:", path)
+    #df = pd.read_csv(path)
+    #df = df.reset_index()
+    #df.columns = [str(c).lower().replace(" ", "_") for c in df.columns]
+    #df["date"] = pd.to_datetime(df["date"])
 
-    return df
+    #return df
 
 
 def clean_numeric_columns(df):
@@ -39,6 +54,11 @@ def moving_avg(df, windows=[20, 50]):
    for w in windows:
       col_name = f"ma_{w}"
       df[col_name] = df["close"].rolling(window=w).mean()
+   return df
+   
+def daily_return(df):
+   df = df.copy()
+   df["daily_return"] = df["close"].pct_change()
    return df
 
 def bollinger_bands(df, window=20, num_std=2):
