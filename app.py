@@ -11,7 +11,6 @@ def load_all_stocks():
 
 df_all = load_all_stocks()
 
-# Stock selector
 available_stocks = sorted(df_all['symbol'].unique())
 ticker = st.sidebar.selectbox("Select Stock", available_stocks)
 
@@ -27,7 +26,6 @@ end_date = st.sidebar.date_input("End Date", value=pd.to_datetime("2025-11-21"))
 show_closing_price_line = st.sidebar.checkbox("Show simple closing price", value=True)
 show_ma_line = st.sidebar.checkbox("Show moving averages", value=True)
 show_scatter = st.sidebar.checkbox("Show volume vs daily return", value=True)
-show_gainers_losers = st.sidebar.checkbox("Show top gainers/losers", value=True)
 show_candles = st.sidebar.checkbox("Show Candlestick + Bollinger Bands", value=True)
 show_rsi = st.sidebar.checkbox("Show RSI indicator", value=True)
 show_macd = st.sidebar.checkbox("Show MACD inidcator", value=True)
@@ -37,13 +35,12 @@ df = get_stock_data(df_all, ticker)
 df = clean_numeric_columns(df)
 df = daily_return(df)
 
-df = df[(df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))]
-
 df = bollinger_bands(df)
 
 df = compute_rsi(df)
 df = compute_macd(df)
 
+df = df[(df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))]
 
 
 tab1, tab2 = st.tabs(["Price Overwiew", "Technical Indicators"])
@@ -52,7 +49,7 @@ if ma_options:
     df = moving_avg(df, windows=ma_options)
 
 if show_comparison:
-    st.subheader("📊 Multi-Stock Comparison")
+    st.subheader("Multi-Stock Comparison")
     comparison_stocks = st.multiselect(
         "Select stocks to compare",
         options=available_stocks,
@@ -69,7 +66,7 @@ if show_comparison:
 
 with tab1:
     if show_closing_price_line:
-        st.subheader("CLosing Price Over Time")
+        st.subheader("Closing Price Over Time")
         fig1 = plot_closing_price(df, symbol=ticker)
         st.plotly_chart(fig1, use_container_width=True)
 
@@ -108,5 +105,3 @@ print(df.columns)
 
 if st.checkbox("Show Raw Data"):
     st.dataframe(df)
-
-
