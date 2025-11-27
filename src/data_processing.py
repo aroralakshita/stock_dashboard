@@ -1,44 +1,47 @@
-import yfinance as yf
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import precision_score
 import pandas as pd
+import numpy as np
 import streamlit as st
+import os
 
-#import os
-#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+def load_stock_data(stock_symbols=['AAPL', 'MSFT', 'TSLA'], data_folder='data'):
+  
+  all_data = []
+  
+  for symbol in stock_symbols:
+    filepath = os.path.join(data_folder, f'{symbol}.csv')
 
-@st.cache_data
-def fetch_stock(ticker, start="2015-01-01", end=None):
- # ticker → stock symbol (e.g., "AAPL" for Apple)
-    
-   #stock = yf.Ticker(ticker)
-   df = yf.download(ticker, start=start, end=end)
-   df.reset_index(inplace=True)
+    try:     
+       df = pd.read_csv(filepath)
+       df['symbol'] = symbol
+
+       df = df.rename(columns={
+                'Close/Last': 'close',
+                'close/last': 'close'
+            })
    
-   if isinstance(df.columns, pd.MultiIndex):
-      df.columns = [c[0].lower() for c in df.columns]
-   else:
-      df.columns = [str(c).lower().replace(" ", "_") for c in df.columns]
-   
-   expected = ["date", "open", "high", "low", "close", "volume"]
+       df.columns = [c.lower().replace(" ", "_") for c in df.columns]
+       df["date"] = pd.to_datetime(df["date"])
 
-   for c in expected:
-      if c not in df.columns:
-         raise KeyError(f"missing required column: {c}")
-   
-   return df[expected]
-   #if df.empty:
-      #raise ValueError(f"No data returned for {ticker}. Try again in 30–60 seconds.")
+       df = df.sort_values('date')
 
+       all_data.append(df)
+       print(f"Loaded {symbol}: {len(df)} rows")
 
-#def load_csv(ticker: str):
-    #path = os.path.join(BASE_DIR, "data", f"{ticker}.csv")
-    #print("Loading:", path)
-    #df = pd.read_csv(path)
-    #df = df.reset_index()
-    #df.columns = [str(c).lower().replace(" ", "_") for c in df.columns]
-    #df["date"] = pd.to_datetime(df["date"])
+    except FileNotFoundError:
+       st.error(f"file not found{filepath}")
+  
+  merged_df = pd.concat(all_data, ignore_index=True)
 
-    #return df
+  print(merged_df.head())
+  print(merged_df.tail())
+  print(merged_df.columns.tolist())
 
+  return merged_df
+
+def get_stock_data(df, symbol):
+   return df[df['symbol'] == symbol].copy().reset_index(drop=True)
 
 def clean_numeric_columns(df):
 
@@ -96,3 +99,9 @@ def compute_macd(df, fast=12, slow=26, signal=9):
    df["MACD_hist"] = df["MACD"] - df["Signal"]
 
    return df
+
+
+
+
+
+   
