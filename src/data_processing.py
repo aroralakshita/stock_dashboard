@@ -1,5 +1,3 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_score
 import pandas as pd
 import numpy as np
 import streamlit as st
